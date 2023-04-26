@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Main {
     static final Scanner scanner = new Scanner(System.in);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String sentence = "start";
         while (!(sentence.equalsIgnoreCase("exit"))) {
             sentence = scanner.nextLine();
@@ -13,15 +13,33 @@ public class Main {
         }
     }
 
-    public static String calc(String input) {
+    public static String calc(String input) throws Exception {
+        boolean isCorrect = false;
         if (input.contains("+")) {
             System.out.println("plus");
-        } else if (input.contains("-")) {
+            isCorrect = true;
+        }
+        if (input.contains("-")) {
             System.out.println("minus");
-        } else if (input.contains("*")) {
+            if (isCorrect) {
+                throw new Exception();
+            } else {
+                isCorrect = true;
+            }
+        }
+        if (input.contains("*")) {
             System.out.println("multiplication");
-        } else if (input.contains("/")) {
+            if (isCorrect) {
+                throw new Exception();
+            } else {
+                isCorrect = true;
+            }
+        }
+        if (input.contains("/")) {
             System.out.println("divide");
+            if (isCorrect) {
+                throw new Exception();
+            }
         }
         return input;
     }
