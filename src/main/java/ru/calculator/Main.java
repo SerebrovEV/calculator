@@ -6,42 +6,84 @@ public class Main {
     static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws Exception {
-        String sentence = "start";
+        System.out.println("Введите выражение для вычисления в формате: \n" +
+                "1+2 или VI-V");
+        String sentence = scanner.nextLine();
         while (!(sentence.equalsIgnoreCase("exit"))) {
-            sentence = scanner.nextLine();
             System.out.println(calc(sentence));
+            System.out.println("Введите выражение для вычисления:");
+            sentence = scanner.nextLine();
         }
     }
 
     public static String calc(String input) throws Exception {
-        boolean isCorrect = false;
-        if (input.contains("+")) {
-            System.out.println("plus");
-            isCorrect = true;
+        input = input.trim();
+        String operation = validateOperation(input);
+        String[] inputSentence = input.split("\\" + operation);
+        int number1 = Integer.parseInt(inputSentence[0]);
+        int number2 = Integer.parseInt(inputSentence[1]);
+        validateNumber(number1, number2);
+        return "Ответ = " + calculation(number1, number2, operation);
+
+    }
+
+    private static int calculation(int number1, int number2, String operation) throws Exception {
+        switch (operation) {
+            case ("+") -> {
+                return number1 + number2;
+            }
+            case("-") -> {
+                return number1 - number2;
+            }
+            case("*") -> {
+                return number1 * number2;
+            }
+            case("/") -> {
+                return number1 / number2;
+            }
+            default -> throw new Exception();
         }
-        if (input.contains("-")) {
-            System.out.println("minus");
-            if (isCorrect) {
+    }
+
+    private static void validateNumber(int number1, int number2) throws Exception {
+        if (number1 < 0 || number2 < 0 || number1 > 10 || number2 > 10) {
+            throw new Exception();
+        }
+    }
+
+    private static String validateOperation(String sentence) throws Exception {
+        String operation = null;
+        boolean findOperation = false;
+        char[] sentenceChar = sentence.toCharArray();
+        for (char c : sentenceChar) {
+            if (findOperation && ((c == '+') || (c == '-') || (c == '*') || (c == '/'))) {
                 throw new Exception();
-            } else {
-                isCorrect = true;
+            }
+            if (c == '+') {
+                operation = "+";
+                findOperation = true;
+                continue;
+            }
+            if (c == '-') {
+                operation = "-";
+                findOperation = true;
+                continue;
+            }
+            if (c == '*') {
+                operation = "*";
+                findOperation = true;
+                continue;
+            }
+            if (c == '/') {
+                operation = "/";
+                findOperation = true;
             }
         }
-        if (input.contains("*")) {
-            System.out.println("multiplication");
-            if (isCorrect) {
-                throw new Exception();
-            } else {
-                isCorrect = true;
-            }
+        if (operation != null) {
+            return operation;
+        } else {
+            throw new Exception();
         }
-        if (input.contains("/")) {
-            System.out.println("divide");
-            if (isCorrect) {
-                throw new Exception();
-            }
-        }
-        return input;
     }
 
 }
