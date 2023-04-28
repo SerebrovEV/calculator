@@ -4,9 +4,10 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Main {
+public class Calculator {
     static final Scanner scanner = new Scanner(System.in);
-    static final Pattern patternRumNumber = Pattern.compile("[A-Z]");
+    static final Pattern patternRomNumber = Pattern.compile("[A-Z]");
+    static final Pattern patternArabNumber = Pattern.compile("[1-9]");
 
     public static void main(String[] args) throws Exception {
         System.out.println("Введите выражение для вычисления в формате: \n" +
@@ -20,24 +21,26 @@ public class Main {
     }
 
     private static String calc(String input) throws Exception {
-        input = input.trim();
+        input = input.replaceAll(" ", "");
         String operation = validateOperation(input);
         String[] inputSentence = input.split("[+-/*]");
-        int number1;
-        int number2;
-        if (checkRomNumber(inputSentence[0], inputSentence[1])) {
-            number1 = romToArabNumber(inputSentence[0]);
-            number2 = romToArabNumber(inputSentence[1]);
-            return "Ответ = " + arabToRomNumber(calculation(number1, number2, operation));
+        String number1 = inputSentence[0];
+        String number2 = inputSentence[1];
+        if (checkRomNumber(number1, number2)) {
+            int romNumber1 = RomNumberConverter.romToArabNumber(number1);
+            int romNumber2 = RomNumberConverter.romToArabNumber(number2);
+            return "Ответ = " + RomNumberConverter.arabToRomNumber(calculation(romNumber1, romNumber2, operation));
+        } else if (checkArabNumber(number1, number2)) {
+            int arabNumber1 = Integer.parseInt(number1);
+            int arabNumber2 = Integer.parseInt(number2);
+            return "Ответ = " + calculation(arabNumber1, arabNumber2, operation);
         } else {
-            number1 = Integer.parseInt(inputSentence[0]);
-            number2 = Integer.parseInt(inputSentence[1]);
-            validateNumber(number1, number2);
-            return "Ответ = " + calculation(number1, number2, operation);
+            throw new Exception("Некорректное арифметическое выражение!");
         }
     }
 
     private static int calculation(int number1, int number2, String operation) throws Exception {
+        validateNumber(number1, number2);
         switch (operation) {
             case ("+") -> {
                 return number1 + number2;
@@ -56,59 +59,19 @@ public class Main {
     }
 
     private static boolean checkRomNumber(String number1, String number2) {
-        Matcher matcherForNumber1 = patternRumNumber.matcher(number1);
-        Matcher matcherForNumber2 = patternRumNumber.matcher(number2);
+        Matcher matcherForNumber1 = patternRomNumber.matcher(number1);
+        Matcher matcherForNumber2 = patternRomNumber.matcher(number2);
         return matcherForNumber1.find() && matcherForNumber2.find();
     }
 
-    private static String arabToRomNumber(int number) throws Exception {
-        String[] romanNumbers = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV",
-                "XV", "XVI", "XVII", "XVIII", "XIX", "XX"};
-        if (number <= 0){
-            throw new Exception();
-        }
-        return romanNumbers[number-1];
+    private static boolean checkArabNumber(String number1, String number2) {
+        Matcher matcherForNumber1 = patternArabNumber.matcher(number1);
+        Matcher matcherForNumber2 = patternArabNumber.matcher(number2);
+        return matcherForNumber1.find() && matcherForNumber2.find();
     }
-
-    private static int romToArabNumber(String number) throws Exception {
-        switch (number) {
-            case ("I") -> {
-                return 1;
-            }
-            case ("II") -> {
-                return 2;
-            }
-            case ("III") -> {
-                return 3;
-            }
-            case ("IV") -> {
-                return 4;
-            }
-            case ("V") -> {
-                return 5;
-            }
-            case ("VI") -> {
-                return 6;
-            }
-            case ("VII") -> {
-                return 7;
-            }
-            case ("VIII") -> {
-                return 8;
-            }
-            case ("IX") -> {
-                return 9;
-            }
-            case ("X") -> {
-                return 10;
-            }
-            default -> throw new Exception();
-        }
-    }
-
     private static void validateNumber(int number1, int number2) throws Exception {
         if (number1 < 1 || number2 < 1 || number1 > 10 || number2 > 10) {
-            throw new Exception();
+            throw new Exception("Некорректный диапазон чисел!");
         }
     }
 
@@ -143,7 +106,7 @@ public class Main {
         if (operation != null) {
             return operation;
         } else {
-            throw new Exception();
+            throw new Exception("Некорректная арифметическая операция!");
         }
     }
 
